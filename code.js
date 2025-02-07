@@ -1,3 +1,18 @@
+const rockBtn = document.querySelector('#Rock');
+const paperBtn = document.querySelector('#Paper');
+const scissorsBtn = document.querySelector('#Scissors');
+
+const resultsDiv = document.querySelector('#resultsDiv')
+const humanDiv = document.querySelector('#humanScore')
+const computerDiv = document.querySelector('#cpuScore')
+const gameEndDiv = document.querySelector('#gameEnd') 
+
+let humanScore = 0;
+let computerScore = 0; 
+var round = 0;
+
+
+
 function getComputerChoice() {
     var num = Math.random();
     let choice = "";
@@ -13,11 +28,11 @@ function getComputerChoice() {
         choice = "Scissors";
         return choice;
     }
+    
 }
 
-function getHumanChoice() {
-    let input = prompt("Rock, Paper, Scissors!\nWhat do you choose?");
-    let choice = formatText(input);
+function getHumanChoice(input) {
+    let choice = input;
     return choice;
 }
 
@@ -32,52 +47,75 @@ function formatText(str) {
     return newStr;
 }
 
-function playGame() {
+function playRound(humanChoice, computerChoice) {
+    computerChoice = getComputerChoice();
+    round++
 
-    let humanScore = 0;
-    let computerScore = 0;
-    let numOfRounds = 5
-
-    for (let i = 1; i <= numOfRounds; i++) {
-
-        let computerSelection = getComputerChoice();
-        let humanSelection = getHumanChoice();
-
-        function playRound(humanChoice, computerChoice) {
-
-            switch (humanChoice + "-" + computerChoice) {
-                case "Rock-Scissors":
-                case "Scissors-Paper":
-                case "Paper-Rock":
-                    humanScore++;
-                    return `You Win, Computer played ${computerChoice}!`;
-                case "Scissors-Rock":
-                case "Paper-Scissors":
-                case "rock-Paper":
-                    computerScore++;
-                    return `You Lose, Computer played ${computerChoice}!`;
-                case "Rock-Rock":
-                case "Paper-Paper":
-                case "Scissors-Scissors":
-                    return "It's a tie!";
-                default:
-                    return "Invalid choice!";
-            }
-        }
-
-        console.log(`Round ${i}: ${playRound(humanSelection, computerSelection)}`);
-    }
-
-    console.log(`Final Score - You: ${humanScore}, Computer: ${computerScore}`);
-    if (humanScore > computerScore) {
-        console.log("Congratulations! You won the game!");
-    } 
-    else if (humanScore < computerScore) {
-        console.log("You lost the game. Better luck next time!");
-    } 
-    else {
-        console.log("It's a tie!");
+    switch (humanChoice + "-" + computerChoice) {
+        case "Rock-Scissors":
+        case "Scissors-Paper":
+        case "Paper-Rock":
+            humanScore++;
+            return `You Win, Computer played ${computerChoice}!`;
+        case "Scissors-Rock":
+        case "Paper-Scissors":
+        case "Rock-Paper":
+            computerScore++;
+            return `You Lose, Computer played ${computerChoice}!`;
+        case "Rock-Rock":
+        case "Paper-Paper":
+        case "Scissors-Scissors":
+            return "It's a tie!";
+        default:
+            return "Invalid choice!";
     }
 }
 
-playGame()
+function fivePoints() {
+    if (humanScore === 5 || computerScore === 5) {
+        return true;
+    }
+}
+
+function getResults(hmn, cpu) {
+    resultsDiv.textContent = playRound(hmn, cpu)
+
+    humanDiv.textContent = `Your Score: ${humanScore}`;
+    computerDiv.textContent = `CPU Score: ${computerScore}`;
+    
+    if (fivePoints()) {
+        (gameEndDiv.style.opacity = '1');
+        if (humanScore > computerScore) {
+            gameEndDiv.textContent = "Congratulations! You won the game!";
+        } 
+        else if (humanScore < computerScore) {
+            gameEndDiv.textContent = "You lost the game. Better luck next time!";
+        } 
+        else {
+            gameEndDiv.textContent = "It's a draw - Play Again!";
+        }
+
+        humanScore = 0;
+        computerScore = 0;
+        round = 0;
+    }
+    else {
+        (gameEndDiv.textContent = '');
+        (gameEndDiv.style.opacity = '0');
+    }
+}
+
+
+
+// Event Handlers
+rockBtn.addEventListener('click', () => {getResults("Rock", getComputerChoice())});
+paperBtn.addEventListener('click', () => {getResults("Paper", getComputerChoice())});
+scissorsBtn.addEventListener('click', () => {getResults("Scissors", getComputerChoice())});
+
+
+
+// Initialization
+resultsDiv.textContent = 'Choose Wisely...';
+humanDiv.textContent = `You: ${humanScore} Points`;
+computerDiv.textContent = `CPU: ${computerScore} Points`;
+gameEndDiv.style.opacity = '0';
